@@ -1,4 +1,7 @@
+# Example neural network from https://victorzhou.com/blog/intro-to-neural-networks/
+
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def sigmoid(x):
@@ -17,6 +20,7 @@ class NeuralNet:
         # 6 weights and 3 biases for a neural network with 2 hidden layer of 2;1 neurons with input size of 2 features
         self.weights = np.random.normal(size=6)
         self.biases = np.random.normal(size=3)
+        self.losses = []
     
     # Feed forward through entire neural network
     def feedForward(self, data, return_all=False):
@@ -29,10 +33,11 @@ class NeuralNet:
             return o1   
 
     # Train over 1000 epochs using SGD with a learning rate of 0.1
-    def train(self, data, learning_rate=0.1, epochs=1000):
+    def train(self, data, learning_rate=0.1, epochs=1000, rel_tol=1e-5):
         features = data[:,:-1]
         labels = data[:,-1:].flatten()
 
+        prev_loss = 0
         for epoch in range(epochs):
             for datapoint, label in zip(features, labels):
                 h1, h2, o1 = self.feedForward(datapoint, return_all=True)
@@ -90,7 +95,11 @@ class NeuralNet:
             if epoch % 50 == 0:
                 prediction = np.apply_along_axis(self.feedForward, 1, data)
                 loss = MSE_loss(labels, prediction)
-                print("Epoch %d loss: %.3f" % (epoch, loss))
+                if epoch != 0 and np.abs(loss - prev_loss) / prev_loss < rel_tol:
+                    return
+                print("Epoch %d loss: %.4f" % (epoch, loss))
+                prev_loss = np.copy(loss)
+                self.losses.append(loss)
 
 
 Alice = np.array([133, 65, 1], dtype='float')
@@ -105,3 +114,27 @@ print("data = ", data)
 
 neural_net = NeuralNet()
 neural_net.train(data)
+
+# plt.plot(neural_net.losses)
+# plt.ylabel('loss')
+# plt.xlabel('epochs')
+# plt.show()
+
+Emily = np.array([128, 63], dtype='float')
+Emily -= data_averaged
+Frank = np.array([155, 68], dtype='float')
+Frank -= data_averaged
+
+Emily_prediction = neural_net.feedForward(Emily)
+print("Emily %.3f " % Emily_prediction)
+if np.rint(Emily_prediction) == 1:
+    print("Emily must be female")
+elif np.rint(Emily_prediction) == 0:
+    print("Emily must be male")
+
+Frank_prediction = neural_net.feedForward(Frank)
+print("Frank %.3f " % Frank_prediction)
+if np.rint(Frank_prediction) == 1:
+    print("Emily must be female")
+elif np.rint(Frank_prediction) == 0:
+    print("Emily must be male")
