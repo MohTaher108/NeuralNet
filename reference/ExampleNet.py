@@ -93,7 +93,7 @@ class NeuralNet:
                 self.biases[1] -= learning_rate * dL_b2
 
             if epoch % 50 == 0:
-                prediction = np.apply_along_axis(self.feedForward, 1, data)
+                prediction = np.apply_along_axis(self.feedForward, 1, features)
                 loss = MSE_loss(labels, prediction)
                 if epoch != 0 and np.abs(loss - prev_loss) / prev_loss < rel_tol:
                     return

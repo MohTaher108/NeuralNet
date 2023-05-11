@@ -54,12 +54,3 @@ weights_arrays = [[weights, weights], [weights]]
 bias_arrays = [[bias, bias], [bias]]
 cur_neural_net = NeuralNet(weights_arrays, bias_arrays)
 print(cur_neural_net.feedForward(np.array([2,3])))
-
-Alice = np.array([133, 65, 1], dtype='float')
-Bob = np.array([160, 72, 0], dtype='float')
-Charlie = np.array([152, 70, 0], dtype='float')
-Diana = np.array([120, 60, 1], dtype='float')
-data = np.array([Alice, Bob, Charlie, Diana])
-data_averaged = np.mean(data[:,:-1], axis=0)
-data[:,:-1] -= data_averaged
-print("data = ", data)
