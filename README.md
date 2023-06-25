@@ -1,3 +1,3 @@
 # NeuralNet
 
-Making my own neural network from scratch with only numpy
+My neural network created from scratch with only numpy
