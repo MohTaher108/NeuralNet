@@ -1,0 +1,78 @@
+For layer  0
+weights.shape =  (2, 2)  and weights = 
+ [[-0.6606486  -0.8007332 ]
+ [-0.34188749 -0.41200892]]
+biases.shape =  (2,)  and biases = 
+ [-1.98904552 -0.87862182]
+
+For layer  1
+weights.shape =  (2, 2)  and weights = 
+ [[-0.81419038  1.2377619 ]
+ [-1.55446143  0.06156821]]
+biases.shape =  (2,)  and biases = 
+ [ 1.78007759 -0.83363025]
+
+For layer  2
+weights.shape =  (2, 2)  and weights = 
+ [[ 0.62301473  0.41474661]
+ [-0.19001765 -0.54547551]]
+biases.shape =  (2,)  and biases = 
+ [ 1.91389732 -1.5861158 ]
+
+For layer  3
+weights.shape =  (1, 2)  and weights = 
+ [[-0.28410622  0.11491661]]
+biases.shape =  (1,)  and biases = 
+ [-1.29192278]
+
+
+
+neuron_partials.shape =  (1, 2)  and neuron_partials = 
+ [[ 0.06807051 -0.02753348]] 
+
+bias_changes = 
+ [-0.2395953]
+
+weight_changes = 
+ [[-0.22155144 -0.03384689]] 
+
+
+
+neuron_partials.shape =  (2, 2)  and neuron_partials = 
+ [[ 0.00295328 -0.0013853 ]
+ [-0.00090074  0.00182194]] 
+
+bias_changes = 
+ [ 0.00474031 -0.0033401 ]
+
+weight_changes = 
+ [[ 0.00423645  0.0004247 ]
+ [-0.00298508 -0.00029925]] 
+
+
+
+neuron_partials.shape =  (2, 2)  and neuron_partials = 
+ [[-2.28414250e-04 -1.39858848e-04]
+ [ 1.33006486e-04  9.14959223e-06]] 
+
+bias_changes = 
+ [9.74886115e-05 1.78078542e-05]
+
+weight_changes = 
+ [[9.67407621e-05 9.11329032e-05]
+ [1.76712476e-05 1.66468825e-05]] 
+
+
+
+neuron_partials.shape =  (2, 2)  and neuron_partials = 
+ [[ 1.14870781e-06  6.82510238e-06]
+ [-3.46156019e-07 -2.29741654e-07]] 
+
+bias_changes = 
+ [-3.63136232e-07 -3.98297642e-06]
+
+weight_changes = 
+ [[2.99587392e-06 6.35488406e-07]
+ [3.28595554e-05 6.97020873e-06]] 
+
+Epoch 0 loss: 0.666828
