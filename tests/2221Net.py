@@ -1,18 +1,22 @@
-# My custom neural network from scratch
+# My custom neural network from scratch that works on a [2,2,2,1] network
 
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
+
 
 def derive_sigmoid(x, do_sigmoid=True):
     sig = x.copy()
     if do_sigmoid: sig = sigmoid(sig)
     return sig * (1 - sig)
 
+
 def MSE_loss(truth, prediction):
     return np.mean((truth - prediction) ** 2)
+
 
 
 # Hidden layer contains a bunch of neurons
@@ -69,7 +73,7 @@ class NeuralNet:
         else:
             return cur_output[0] # final output is an array
 
-    # Train the network using SGD
+    # good luck
     def train(self, data, learning_rate=0.1, epochs=1000, rel_tol=1e-5):
         features = data[:,:-1]
         labels = data[:,-1:].flatten()
@@ -86,12 +90,19 @@ class NeuralNet:
                     bias_changes = np.mean(bias_changes, axis=0) # Average across every neuron path in the front layer
                     weight_changes = bias_changes[:, np.newaxis] * layers_outputs[layer-1][np.newaxis,:]
                     
+                    # print("\nLayer ", layer)
+                    # print("neuron_partials = \n", neuron_partials, "\n")
+                    # print("bias_changes = \n", bias_changes, "\n")
+                    # print("weight_changes = \n", weight_changes, "\n")
+
                     if layer > 1:
                         product = self.layers[layer-1].weights.T * derive_sigmoid(layers_outputs[layer], do_sigmoid=False)
                         neuron_partials = (np.mean(neuron_partials, axis=0, keepdims=True) * product).T
                     self.layers[layer-1].biases = self.layers[layer-1].biases - learning_rate * bias_changes
                     self.layers[layer-1].weights = self.layers[layer-1].weights - learning_rate * weight_changes
 
+            # print("\n Layer 0")                 
+            # print("neuron_partials = \n", neuron_partials, "\n")
             if epoch % 50 == 0:
                 prediction = np.apply_along_axis(self.feedForward, 1, features)
                 loss = MSE_loss(labels, prediction)
@@ -110,15 +121,31 @@ data = np.array([Alice, Bob, Charlie, Diana])
 
 data_averaged = np.mean(data[:,:-1], axis=0)
 data[:,:-1] -= data_averaged
+data = data[0].reshape(1,data.shape[1]) # pull one datapoint
 
 num_layers = 4
-num_neurons_per_layer = [4, 3, 3, 1]
+num_neurons_per_layer = [2, 2, 2, 1]
 num_dimensions = 2
 neural_net = NeuralNet(num_layers, num_neurons_per_layer, num_dimensions)
-neural_net.train(data, epochs=1001)
 
-x = np.linspace(0, 1000, 21)
-plt.plot(x, neural_net.losses)
-plt.ylabel('loss')
-plt.xlabel('epochs')
-plt.show()
+
+def saveToFile(fileName, array, arrayTypeIdentifier):
+    np.savetxt(fileName, array, fmt=arrayTypeIdentifier)
+
+saveToFile('files/labels.txt', data[:,-1], '%f')
+saveToFile('files/weights_0.txt', neural_net.layers[0].weights, '%f')
+saveToFile('files/weights_1.txt', neural_net.layers[1].weights, '%f')
+saveToFile('files/weights_2.txt', neural_net.layers[2].weights, '%f')
+saveToFile('files/weights_3.txt', neural_net.layers[3].weights, '%f')
+saveToFile('files/biases_0.txt', neural_net.layers[0].biases, '%f')
+saveToFile('files/biases_1.txt', neural_net.layers[1].biases, '%f')
+saveToFile('files/biases_2.txt', neural_net.layers[2].biases, '%f')
+saveToFile('files/biases_3.txt', neural_net.layers[3].biases, '%f')
+layers_outputs = neural_net.feedForward(data[:,:-1][0], output_per_layer=True)
+saveToFile('files/layers_outputs_0.txt', layers_outputs[0], '%f')
+saveToFile('files/layers_outputs_1.txt', layers_outputs[1], '%f')
+saveToFile('files/layers_outputs_2.txt', layers_outputs[2], '%f')
+saveToFile('files/layers_outputs_3.txt', layers_outputs[3], '%f')
+saveToFile('files/layers_outputs_4.txt', layers_outputs[4], '%f')
+
+neural_net.train(data, epochs=1)
