@@ -11,7 +11,9 @@ def derive_sigmoid(x, do_sigmoid=True):
     if do_sigmoid: sig = sigmoid(sig)
     return sig * (1 - sig)
 
-def MSE_loss(truth, prediction):
+def brier_loss(truth, prediction):
+    if truth.shape != prediction.shape:
+        print("brier_loss shape mismatch!")
     return np.mean((truth - prediction) ** 2)
 
 
@@ -28,12 +30,12 @@ class HiddenLayer:
         print("biases.shape = ", self.biases.shape, " and biases = \n", self.biases)
     
     # Feed through layer with sigmoid activation
-    def feedForward(self, data):
+    def feed_forward(self, features):
         # Account for one data point edge case
-        if data.ndim == 1:
-            data = data[np.newaxis,:]
+        if features.ndim == 1:
+            features = features[np.newaxis,:]
             
-        result = np.matmul(data, self.weights.T) + self.biases
+        result = np.matmul(features, self.weights.T) + self.biases
         if result.shape[0] == 1: # Remove unnecessary 2nd dimension
             result = result[0]
 
@@ -57,27 +59,36 @@ class NeuralNet:
             print()
 
     # Feed through every layer and return result (optionally return the output of every layer)
-    def feedForward(self, data, output_per_layer=False):
-        cur_output = data.copy()
+    def feed_forward(self, features, output_per_layer=False, full_final_output=False):
+        cur_output = features.copy()
         layers_outputs = [cur_output.copy()]
         for i in range(self.num_layers):
-            cur_output = self.layers[i].feedForward(cur_output)
-            layers_outputs.append(cur_output.copy())
+            cur_output = self.layers[i].feed_forward(cur_output)
+            layers_outputs.append(cur_output.copy())            
 
         if output_per_layer:
             return layers_outputs
+        if full_final_output:
+            return cur_output
         else:
-            return cur_output[0] # final output is an array
+            return np.argmax(cur_output, axis=1)
 
     # Train the network using SGD
-    def train(self, data, learning_rate=0.1, epochs=1000, rel_tol=1e-5):
-        features = data[:,:-1]
-        labels = data[:,-1:].flatten()
-
+    def train(self, features, labels, learning_rate=0.1, epochs=1000, rel_tol=1e-5):
+        # If multi-label classification then switch labels to 2d array, where each row is an array with index label set to 1 and the rest to 0
+        num_labels_possible = self.layers[self.num_layers - 1].biases.shape[0]
+        if num_labels_possible > 1 and labels.ndim == 1:
+            aux_array = np.zeros((labels.shape[0], num_labels_possible))
+            z = np.arange(labels.shape[0])
+            aux_array[z, labels] = 1 # Index by 0,1,2,3 and labels to set correct values in array to 1
+            labels = aux_array
+        
         prev_loss = 0
         for epoch in range(epochs):
+            i = 0
             for datapoint, label in zip(features, labels):
-                layers_outputs = self.feedForward(datapoint, output_per_layer=True) # layer 1's output is actually indexed by 1 (index 0 is original data)
+                i += 1
+                layers_outputs = self.feed_forward(datapoint, output_per_layer=True) # layer 1's output is actually indexed by 1 (index 0 is original data)
                 dL_dpred = -2 * (label - layers_outputs[self.num_layers])
                 neuron_partials = np.array([dL_dpred])
 
@@ -93,32 +104,11 @@ class NeuralNet:
                     self.layers[layer-1].weights = self.layers[layer-1].weights - learning_rate * weight_changes
 
             if epoch % 50 == 0:
-                prediction = np.apply_along_axis(self.feedForward, 1, features)
-                loss = MSE_loss(labels, prediction)
+                prediction = np.apply_along_axis(self.feed_forward, 1, features, full_final_output=True)
+                loss = brier_loss(labels, prediction)
                 print("Epoch %d loss: %.6f" % (epoch, loss))
                 if epoch != 0 and np.abs(loss - prev_loss) / prev_loss < rel_tol:
+                    print("loss ratio = ", np.abs(loss - prev_loss) / prev_loss)
                     return
                 prev_loss = np.copy(loss)
                 self.losses.append(loss)
-
-
-Alice = np.array([133, 65, 1], dtype='float')
-Bob = np.array([160, 72, 0], dtype='float')
-Charlie = np.array([152, 70, 0], dtype='float')
-Diana = np.array([120, 60, 1], dtype='float')
-data = np.array([Alice, Bob, Charlie, Diana])
-
-data_averaged = np.mean(data[:,:-1], axis=0)
-data[:,:-1] -= data_averaged
-
-num_layers = 4
-num_neurons_per_layer = [4, 3, 3, 1]
-num_dimensions = 2
-neural_net = NeuralNet(num_layers, num_neurons_per_layer, num_dimensions)
-neural_net.train(data, epochs=1001)
-
-x = np.linspace(0, 1000, 21)
-plt.plot(x, neural_net.losses)
-plt.ylabel('loss')
-plt.xlabel('epochs')
-plt.show()
