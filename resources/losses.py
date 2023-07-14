@@ -2,12 +2,8 @@
 
 import numpy as np
 
-def MSE(truth, prediction, derive=False):
-    if derive:
-        return MSE_derive(truth, prediction)
 
-    if truth.shape != prediction.shape:
-        print("MSE shape mismatch!")  
+def MSE(truth, prediction):
     return np.mean((truth - prediction) ** 2)
 
 def MSE_derive(truth, prediction):
@@ -15,5 +11,8 @@ def MSE_derive(truth, prediction):
 
 
 
-# def crossEntropy(input):
-#     return 
+def cross_entropy(truth, prediction):
+    return (-1 * np.sum(truth * np.log(prediction + 1e-15))) / 1000
+
+def cross_entropy_softmax_derive(truth, prediction):
+    return (prediction - truth) / 1000
