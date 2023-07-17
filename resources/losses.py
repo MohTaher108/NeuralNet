@@ -12,7 +12,7 @@ def MSE_derive(truth, prediction):
 
 
 def cross_entropy(truth, prediction):
-    return (-1 * np.sum(truth * np.log(prediction + 1e-15))) / 1000
+    return -1 * np.mean(np.sum(truth * np.log(prediction + 1e-15), axis=-1))
 
 def cross_entropy_softmax_derive(truth, prediction):
-    return (prediction - truth) / 1000
+    return (prediction - truth)
