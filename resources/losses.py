@@ -15,4 +15,4 @@ def cross_entropy(truth, prediction):
     return -1 * np.mean(np.sum(truth * np.log(prediction + 1e-15), axis=-1))
 
 def cross_entropy_softmax_derive(truth, prediction):
-    return (prediction - truth)
+    return prediction - truth

@@ -28,7 +28,7 @@ num_neurons_per_layer = [input_size, 12, output_size] # Input shape, layers' sha
 neural_net = NeuralNet(num_neurons_per_layer)
 
 # Train neural net
-epochs, batch_size, learning_rate, loss_step = 3001, 32, 2e-3, 10 # 1.5
+epochs, batch_size, learning_rate, loss_step = 3001, 32, 2e-3, 100 #2e-3
 neural_net.train(X_train, y_train, epochs=epochs, batch_size=batch_size, learning_rate=learning_rate, loss_step=loss_step)
 
 # Plot loss vs epochs

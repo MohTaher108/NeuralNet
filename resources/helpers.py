@@ -1,4 +1,4 @@
-# Helper functions such as shuffling data and splitting data
+# Helper functions such as shuffling data, splitting data, and multi-class classification
 
 import numpy as np
 
@@ -33,3 +33,9 @@ def batch_split(features, labels, batch_size):
         labels_batches = np.concatenate((labels_batches, excessLabels[np.newaxis,:]), axis=0)
 
     return features_batches, labels_batches
+
+def multi_class_classification(labels, num_labels_possible):
+    aux_array = np.zeros((labels.shape[0], num_labels_possible))
+    z = np.arange(labels.shape[0])
+    aux_array[z, labels] = 1 # Index by 0,1,2,3 and labels to set correct values in array to 1
+    return aux_array
