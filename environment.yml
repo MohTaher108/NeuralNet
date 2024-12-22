@@ -1,0 +1,8 @@
+name: neural_net
+dependencies:
+- python=3.10
+- pip=24.2
+- pip:
+  - tensorflow==2.18.0
+  - palmerpenguins==0.1.4
+  - scikit-learn==1.6.0
